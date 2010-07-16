@@ -6,3 +6,6 @@ PhD: The definitive guide to PHP's DocBook Rendering System 日本語版
 英語版のソースは
 http://svn.php.net/viewvc/phd/trunk/docs/phd-guide/
 で公開されています。
+
+この日本語訳は、SVN Revision 298506 に対応しています。
+http://svn.php.net/viewvc/phd/trunk/docs/phd-guide/phd-guide.xml?revision=298506&view=markup
