@@ -1,0 +1,8 @@
+PhD: The definitive guide to PHP's DocBook Rendering System 日本語版
+====================================================================
+
+これは、http://doc.php.net/phd/docs/ で公開されている PhD ドキュメントの日本語訳です。
+
+英語版のソースは
+http://svn.php.net/viewvc/phd/trunk/docs/phd-guide/
+で公開されています。

@@ -1,0 +1,584 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- EN-Revision: 298506 Maintainer: takagi Status: working -->
+<book version="5.0" xmlns="http://docbook.org/ns/docbook"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      xmlns:xi="http://www.w3.org/2001/XInclude"
+      xmlns:svg="http://www.w3.org/2000/svg"
+      xmlns:mml="http://www.w3.org/1998/Math/MathML"
+      xmlns:html="http://www.w3.org/1999/xhtml"
+      xmlns:db="http://docbook.org/ns/docbook"
+      xml:id="phd-guide">
+  <title>PhD: The definitive guide to PHP's DocBook Rendering System</title>
+
+  <preface xml:id="preface">
+    <title>PhD について</title>
+
+    <para>
+      PhD は、PHP 専用の DocBook 5 レンダリングシステムです。
+      これを使うと、<acronym>PHP</acronym> マニュアルや
+      PEAR のドキュメントをさまざまな形式
+      (XHTML、PDF、Man ページ、CHM など) に変換することができます。
+    </para>
+
+    <para>
+      PhD の目標は、高速で汎用的な DocBook レンダリングシステムとなることです。
+      この時点でも、PhD はすでに十分高速です。PEAR マニュアルの分割版
+      (ファイル数 3000) を作るのに、2GHz のシステムなら 1 分もかかりません。
+      また、PHP と PEAR のマニュアルを問題なくレンダリングすることができます。
+      まだ DocBook 5 のすべてのタグに対応しているわけではなく、
+      他の DocBook ファイルをレンダリングするにはちょっとした小細工を要するでしょう。
+    </para>
+  </preface>
+
+  <chapter xml:id="getting-phd">
+    <title>PhD の入手</title>
+
+    <para>
+      <link linkend="links">リンク集</link> に、その他のチュートリアルをまとめました。
+    </para>
+
+    <section xml:id="installation">
+      <title>インストール</title>
+
+      <para>
+        PhD は、PEAR チャンネル <uri>doc.php.net</uri> で配布されています。
+        これを使うのがいちばん簡単でしょう。
+      </para>
+
+      <section xml:id="installation-pear">
+        <title>PEAR を使ったインストール</title>
+
+        <note>
+          <para>
+            まずは <link xlink:href="http://pear.php.net/manual/ja/installation.php">PEAR</link>
+            をインストールしましょう。
+          </para>
+        </note>
+
+        <para>PhD の最新版は、このようにインストールします。</para>
+
+        <screen>
+<![CDATA[
+$ pear install doc.php.net/phd
+
+... downloading
+
+$ phd --version
+PhD Version: 1.0.0-stable
+PHP Version: 5.3.3
+Copyright(c) 2007-2010 The PHP Documentation Group
+]]>
+        </screen>
+
+        <para>PhD 関連のパッケージは、このようにインストールします。</para>
+
+        <screen>
+<![CDATA[
+$ pear install doc.php.net/phd_php
+Starting to download PhD_PHP-1.0.0.tgz (18,948 bytes)
+[...]
+install ok: channel://doc.php.net/PhD_PHP-1.0.0
+
+$ pear install doc.php.net/phd_pear
+downloading PhD_PEAR-1.0.0.tgz ...
+[...]
+install ok: channel://doc.php.net/PhD_PEAR-1.0.0
+]]>
+        </screen>
+
+        <para>ほら、できた!</para>
+      </section>
+
+      <section xml:base="" xml:id="installation-svn">
+        <title>SVN からのインストール</title>
+
+        <para>
+          まだリリースされていない最新の機能を使うには、
+          PhD を SVN からインストールします。
+        </para>
+
+        <screen>
+<![CDATA[
+$ svn checkout http://svn.php.net:/repository/phd/trunk phd
+... output
+
+pear install package.xml package_generic.xml package_php.xml package_pear.xml 
+[...]
+install ok: channel://doc.php.net/PhD-1.0.1
+install ok: channel://doc.php.net/PhD_Generic-1.0.1
+install ok: channel://doc.php.net/PhD_PHP-1.0.1
+install ok: channel://doc.php.net/PhD_PEAR-1.0.1
+bjori@jessica:/usr/src/php/svn/phd/trunk$ 
+
+$ phd --version
+PhD Version: phd-from-svn
+PHP Version: 5.3.3-dev
+Copyright(c) 2007-2010 The PHP Documentation Group
+]]>
+        </screen>
+
+        <para>これでできあがり。</para>
+      </section>
+    </section>
+  </chapter>
+
+  <chapter xml:id="using-phd">
+    <title>PhD による文書のレンダリング</title>
+
+    <section xml:id="render-phpdoc">
+      <title>PHP ドキュメントのレンダリング</title>
+
+      <sidebar>
+        <title>PHP ドキュメントのソースの取得</title>
+
+        <para>
+          PHP のドキュメントのソースは、次のように<link
+          xlink:href="http://wiki.php.net/doc/scratchpad/howto/checkout">SVN からチェックアウト</link>
+          します。
+        </para>
+
+        <screen>
+<![CDATA[
+$ svn co http://svn.php.net/repository/phpdoc/modules/doc-ja phpdoc
+... output
+]]>
+        </screen>
+
+        <para>
+          まず下ごしらえとして、<command>cd</command> で phpdoc
+          ディレクトリに移って configure.php を実行します。
+        </para>
+
+        <screen><![CDATA[$ php doc-base/configure.php --with-lang=ja]]></screen>
+
+        <para>
+          この処理では、カレントディレクトリに .manual.xml というファイルを作ります。
+          ドキュメントをビルドする際に、このファイルが必要となります。
+          これで、PhD を使って PHP のドキュメントを作る準備ができました。
+        </para>
+      </sidebar>
+
+      <para>
+        PhD の使い方に慣れるには、まずは
+        PHP のドキュメントのソースをダウンロードしてビルドしてみるのがよいでしょう。
+        PhD によるドキュメントのビルドは驚くほど簡単なので、はじめの一歩として最適です。
+      </para>
+
+      <screen>
+<![CDATA[
+$ phd -d .manual.xml -P PHP
+... status messages
+]]>
+      </screen>
+
+      <para>
+        しばらく待っていると、PhD が
+        <literal>output/</literal> にドキュメントを作りはじめます。
+      </para>
+
+      <para>
+        これでできあがりです。では、ここからは PhD についてさらに詳しく見ていきましょう。
+        PhD にはどんな機能があってどのように使えるのでしょうか。
+      </para>
+
+      <screen>
+<![CDATA[
+$ phd --help
+PhD version: 1.0.0-stable
+Copyright (c) 2007-2010 The PHP Documentation Group
+
+  -v
+  --verbose <int>            Adjusts the verbosity level
+  -f <formatname>
+  --format <formatname>      The build format to use
+  -P <packagename>
+  --package <packagename>    The package to use
+  -I
+  --noindex                  Do not index before rendering but load from cache
+                             (default: false)
+  -r
+  --forceindex               Force re-indexing under all circumstances
+                             (default: false)
+  -d <filename>
+  --docbook <filename>       The Docbook file to render from
+  -x
+  --xinclude                 Process XML Inclusions (XInclude)
+                             (default: false)
+  -p <id[=bool]>
+  --partial <id[=bool]>      The ID to render, optionally skipping its children
+                             chunks (default to true; render children)
+  -s <id[=bool]>
+  --skip <id[=bool]>         The ID to skip, optionally skipping its children
+                             chunks (default to true; skip children)
+  -l
+  --list                     Print out the supported packages and formats
+  -o <directory>
+  --output <directory>       The output directory (default: .)
+  -L <language>
+  --lang <language>          The language of the source file (used by the CHM
+                             theme). (default: en)
+  -c <bool>
+  --color <bool>             Enable color output when output is to a terminal
+                             (default: true)
+  -C <filename>
+  --css <filename>           Link for an external CSS file.
+  -g <classname>
+  --highlighter <classname>  Use custom source code highlighting php class
+  -V
+  --version                  Print the PhD version information
+  -h
+  --help                     This help
+
+Most options can be passed multiple times for greater effect.
+]]>
+      </screen>
+
+      <para>
+        ごらんの通り、PhD には大量のオプションがあります。
+        中でも一番重要なオプションは、
+        ドキュメントの出力に使うパッケージとフォーマットを選ぶものです。
+      </para>
+
+      <screen>
+<![CDATA[
+$ phd --list
+Supported packages:
+       Generic
+              xhtml
+              bigxhtml
+       IDE
+              functions
+              funclist
+       PEAR
+              xhtml
+              bigxhtml
+              php
+              chm
+              tocfeed
+       PHP
+              xhtml
+              bigxhtml
+              php
+              howto
+              manpage
+              pdf
+              bigpdf
+              kdevelop
+              chm
+              tocfeed
+
+]]>
+      </screen>
+
+      <para>
+        <literal>--list</literal> オプションの出力結果を見ると、
+        PhD を使ってドキュメントを PDF 化したり
+        Unix の man ページを作ったりできるということもわかります。
+      </para>
+
+      <para>
+        フォーマットとパッケージを指定するには、<literal>-f
+        [フォーマット名]</literal> と <literal>-P [パッケージ名]</literal>
+        を使います。
+      </para>
+
+      <screen><![CDATA[$ phd -f manpage -P PHP -d .manual.xml]]></screen>
+
+      <para>
+        たとえば、上のコマンドは、PHP の関数のドキュメントを
+        Unix man ページの形式で出力します。
+      </para>
+    </section>
+
+    <section xml:id="render-phd-guide">
+      <title>PhD ガイドのコンパイル</title>
+
+      <para>
+        PhD ガイドとは、今あなたが読んでいるこのマニュアルのことです。
+        英語版は、<acronym>PhD</acronym> の SVN リポジトリの
+        <filename>docs/phd-guide/phd-guide.xml</filename> にあります
+        (日本語版は、…にあります)。
+        PhD を SVN からインストールした場合は、すでに手元にあるはずです。
+        そうでない場合は次のようにして取得しましょう。
+      </para>
+
+      <screen>
+<![CDATA[
+$ svn checkout http://svn.php.net:/repository/phd/trunk/docs/phd-guide
+U phd/docs/phd-guide/phd-guide.xml
+]]>
+      </screen>
+
+      <para>必要なものはこれだけ。あとはこのように打ち込むだけです。</para>
+
+      <screen>
+<![CDATA[
+$ cd phd/docs/phd-guide/
+$ phd -f bigxhtml -d phd-guide.xml
+]]>
+      </screen>
+
+      <para>ディレクトリ内に .html ファイルができるので、これをブラウザで見てみましょう!</para>
+
+      <para>これを参考にすれば、みなさんが自分で作った docbook ファイルもレンダリングできるでしょう。</para>
+    </section>
+  </chapter>
+
+  <chapter xml:id="docbook-extensions">
+    <title>DocBook の拡張</title>
+
+    <para>
+      PhD は PHP と PEAR のマニュアル用に調整されています。
+      ドキュメントを書きやすくするために、独自のタグをいくつか DTD に追加しています。
+    </para>
+
+    <para>
+      拡張は、すべて XML 名前空間 "<literal>phd:</literal>" 配下にあり、これは
+      <uri>http://www.php.net/ns/phd</uri> に解決されます。
+      ここで説明するタグや属性を使う場合は、次のように名前空間を設定することを忘れないようにしましょう。
+    </para>
+
+    <programlisting>xmlns:phd="http://www.php.net/ns/phd"</programlisting>
+
+    <section xml:id="ext-general">
+      <title>全般的な DocBook 拡張</title>
+
+      <para>ここでとりあげた拡張は、PhD のすべてのテーマおよびフォーマットで使えます。</para>
+
+      <section xml:id="ext-phd-chunk">
+        <title>"phd:chunk" (属性) によるマニュアルの分割</title>
+
+        <para>
+          chunked テーマを指定すると、PhD は section、chapter
+          などのタグを認識してそれぞれを別のファイルにします。
+          しかし、この自動分割の結果に満足できず、自分で調整したくなることもあるでしょう。
+          そんなときのために PhD が用意した解決策が、"phd:chunk" 属性です。
+        </para>
+
+        <section>
+          <title>使える値</title>
+
+          <para>
+            <literal>phd:chunk</literal> には
+            <literal>true</literal> あるいは <literal>false</literal> を指定します。
+            これは、その要素を強制的に分割するか否かを指定するものです。
+          </para>
+        </section>
+
+        <section>
+          <title>使える場所</title>
+
+          <para>
+            <literal>phd:chunk</literal> は、
+            <link xlink:href="http://www.docbook.org/tdg5/en/html/ref-elements.html#common.attributes">db.common.attributes</link>
+            を許可するすべてのタグで使えます。
+          </para>
+        </section>
+
+        <section>
+          <title>例</title>
+
+          <programlisting role="xml">
+<![CDATA[
+<?xml version="1.0" encoding="utf-8"?>
+<preface xmlns="http://docbook.org/ns/docbook"
+ xmlns:phd="http://www.php.net/ns/phd"
+ xml:id="preface"
+ phd:chunk="false"
+>
+ <info>
+  <title>Preface</title>
+ ..
+ </info>
+ ..
+</preface>
+]]>
+          </programlisting>
+        </section>
+      </section>
+
+      <section xml:id="ext-phd-toc">
+        <title>&lt;phd:toc&gt; (タグ) による目次の作成</title>
+
+        <para>
+          目次 (指定したタグの子要素へのリンクの一覧)
+          を手動で追加することができます。
+        </para>
+
+        <para>phd:toc-depth</para>
+
+        <section>
+          <title>使える場所</title>
+
+          <para>
+            <literal>&lt;phd:toc&gt;</literal> は、
+            <literal>&lt;para&gt;</literal> が使える場所ならどこでも使えます。
+          </para>
+        </section>
+
+        <section>
+          <title>子</title>
+
+          <para><literal>&lt;title&gt;</literal> でタイトルを追加できます。</para>
+        </section>
+
+        <section>
+          <title>属性</title>
+
+          <table>
+            <title>&lt;phd:toc&gt; の属性</title>
+
+            <tgroup cols="3">
+              <thead>
+                <row>
+                  <entry>属性名</entry>
+
+                  <entry>説明</entry>
+
+                  <entry>デフォルト値</entry>
+                </row>
+              </thead>
+
+              <tbody>
+                <row>
+                  <entry>phd:element</entry>
+
+                  <entry>子のリンクをつくりたい要素の ID</entry>
+
+                  <entry><emphasis>none</emphasis></entry>
+                </row>
+
+                <row>
+                  <entry>phd:toc-depth</entry>
+
+                  <entry>目次の深さ/階層</entry>
+
+                  <entry><literal>1</literal></entry>
+                </row>
+              </tbody>
+            </tgroup>
+          </table>
+        </section>
+      </section>
+    </section>
+
+    <section xml:id="ext-pear">
+      <title>PEAR 固有の DocBook 拡張</title>
+
+      <para>ここでとりあげた DocBook 拡張は、PEAR テーマでのみ使えます。</para>
+
+      <section xml:id="ext-phd-pearapi" xml:lang="">
+        <title>&lt;phd:pearapi&gt; (タグ) による PEAR API ドキュメントへのリンク</title>
+
+        <para>
+          PEAR マニュアルの大半は、パッケージとその使いかたの説明です。
+          パッケージの作者が説明を書くときには、
+          そのパッケージのメソッドや変数そしてクラスの
+          API ドキュメントへのリンクを張ることが多くなるでしょう。
+          リンクを張りやすくするために用意したのが
+          <literal>&lt;phd:pearapi&gt;</literal> タグです。
+        </para>
+
+        <para>
+          タグをそのまま閉じれば PhD が自動的にリンクテキストを作ります。
+          あるいは、閉じタグとの間に自分でリンクテキストを書くこともできます。
+        </para>
+
+        <section>
+          <title>パッケージへのリンク</title>
+
+          <para>パッケージ名を <literal>phd:package</literal> 属性に指定します。</para>
+
+          <programlisting role="xml">
+<![CDATA[
+<phd:pearapi phd:package="HTML_QuickForm"/>
+<phd:pearapi phd:package="HTML_QuickForm">何かのテキスト</phd:pearapi>
+]]>
+          </programlisting>
+
+          <screen><link
+              xlink:href="http://pear.php.net/package/HTML_QuickForm/docs/latest/li_HTML_QuickForm.html">HTML_QuickForm</link>
+<link xlink:href="http://pear.php.net/package/HTML_QuickForm/docs/latest/li_HTML_QuickForm.html">何かのテキスト</link></screen>
+        </section>
+
+        <section>
+          <title>クラスへのリンク</title>
+
+          <para>クラス名を <literal>phd:linkend</literal> 属性に指定します。</para>
+
+          <programlisting role="xml">
+<![CDATA[
+<phd:pearapi phd:package="HTML_QuickForm" phd:linkend="HTML_QuickForm_element"/>
+<phd:pearapi phd:package="HTML_QuickForm" phd:linkend="HTML_QuickForm_element">何かのテキスト</phd:pearapi>
+]]>
+          </programlisting>
+
+          <screen><link
+              xlink:href="http://pear.php.net/package/HTML_QuickForm/docs/latest/HTML_QuickForm/HTML_QuickForm_element.html">HTML_QuickForm_element</link>
+<link xlink:href="http://pear.php.net/package/HTML_QuickForm/docs/latest/HTML_QuickForm/HTML_QuickForm_element.html">何かのテキスト</link></screen>
+        </section>
+
+        <section>
+          <title>クラスのメソッドへのリンク</title>
+
+          <para>
+            クラス名とメソッド名を、コロンふたつでつなげて
+            <literal>phd:linkend</literal> に指定します。
+          </para>
+
+          <programlisting role="xml">
+<![CDATA[
+<phd:pearapi phd:package="HTML_QuickForm" phd:linkend="HTML_QuickForm_element::setName"/>
+<phd:pearapi phd:package="HTML_QuickForm" phd:linkend="HTML_QuickForm_element::setName">何かのテキスト</phd:pearapi>
+]]>
+          </programlisting>
+
+          <screen><link
+              xlink:href="http://pear.php.net/package/HTML_QuickForm/docs/latest/HTML_QuickForm/HTML_QuickForm_element.html#methodsetName">HTML_QuickForm_element::setName()</link>
+<link xlink:href="http://pear.php.net/package/HTML_QuickForm/docs/latest/HTML_QuickForm/HTML_QuickForm_element.html#methodsetName">何かのテキスト</link></screen>
+        </section>
+
+        <section>
+          <title>クラスの変数へのリンク</title>
+
+          <para>
+            クラス名と変数名を、コロンふたつでつなげて
+            <literal>phd:linkend</literal> に指定します。
+            変数名の前にはドル記号をつけます。
+          </para>
+
+          <programlisting role="xml">
+<![CDATA[
+<phd:pearapi phd:package="Net_Geo" phd:linkend="Net_Geo::$cache_ttl"/>
+<phd:pearapi phd:package="Net_Geo" phd:linkend="Net_Geo::$cache_ttl">何かのテキスト</phd:pearapi>
+]]>
+          </programlisting>
+
+          <screen><link
+              xlink:href="http://pear.php.net/package/Net_Geo/docs/latest/Net_Geo/Net_Geo.html#var$cache_ttl">Net_Geo::$cache_ttl</link>
+<link xlink:href="http://pear.php.net/package/Net_Geo/docs/latest/Net_Geo/Net_Geo.html#var$cache_ttl">何かのテキスト</link></screen>
+        </section>
+      </section>
+    </section>
+  </chapter>
+
+  <appendix xml:id="links">
+    <title>リンク集</title>
+
+    <para>さらに知りたい人向けの記事です。新しい記事から順に並べます。</para>
+
+    <itemizedlist>
+      <listitem>
+        <para><link
+        xlink:href="http://elizabethmariesmith.com/2009/02/setting-up-phd-on-windows/">Setting
+        up PhD on Windows</link> by Elizabeth Marie Smith (PhD 0.4.5)</para>
+      </listitem>
+
+      <listitem>
+        <para><link
+        xlink:href="http://bjori.blogspot.com/2007/10/phd-php-based-docbook-renderer-rc1.html">PhD
+        0.1RC1 released</link> by Hannes Magnusson (PhD 0.1RC1)</para>
+      </listitem>
+    </itemizedlist>
+  </appendix>
+</book>
