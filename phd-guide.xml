@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- EN-Revision: 302829 Maintainer: takagi Status: ready -->
+<!-- EN-Revision: 302840 Maintainer: takagi Status: ready -->
 <book version="5.0" xmlns="http://docbook.org/ns/docbook"
       xmlns:xlink="http://www.w3.org/1999/xlink"
       xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -336,6 +336,27 @@ $ phd -f bigxhtml -d phd-guide.xml
         <para>プログラミング言語に関するドキュメントには、
         サンプルコードが含まれることがあります。PhD は、
         さまざまな形式でソースコードに色付けすることができます。</para>
+
+        <para>構文ハイライト機能を使うには、
+        <literal>&lt;programlisting&gt;</literal> 開始タグに
+        <literal>role</literal> 属性をつけて、ソースコードの型を指定しなければなりません。
+        たとえば <literal>php</literal> や
+        <literal>html</literal>、そして <literal>python</literal> などです。</para>
+
+        <note>
+          <para>今のところ、PhD が色付けすることができるのは
+          <literal>CDATA</literal> セクションに埋め込まれたコードだけです。</para>
+        </note>
+
+        <example>
+          <title>programlisting タグでの role の指定</title>
+          <programlisting role="xml"><![CDATA[<programlisting role="php"><![CDATA[
+<?php
+echo "Hello world!";
+?>
+]]>]]&gt;&lt;/programlisting&gt;
+          </programlisting>
+        </example>
 
         <para>デフォルトでは PhD は PHP 自体に組み込まれている
         色付け機能を使います。この機能は PHP のコードにのみ対応したものであり、
