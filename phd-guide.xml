@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- EN-Revision: 302840 Maintainer: takagi Status: ready -->
+<!-- EN-Revision: 302846 Maintainer: takagi Status: ready -->
 <book version="5.0" xmlns="http://docbook.org/ns/docbook"
       xmlns:xlink="http://www.w3.org/1999/xlink"
       xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -323,6 +323,7 @@ $ phd -f bigxhtml -d phd-guide.xml
       <para>これを参考にすれば、みなさんが自分で作った docbook ファイルもレンダリングできるでしょう。</para>
     </section>
 
+
     <section xml:id="render-custom">
       <title>出力結果のカスタマイズ</title>
 
@@ -335,6 +336,7 @@ $ phd -f bigxhtml -d phd-guide.xml
 
         <para>プログラミング言語に関するドキュメントには、
         サンプルコードが含まれることがあります。PhD は、
+        <emphasis>構文強調クラス</emphasis>を使って
         さまざまな形式でソースコードに色付けすることができます。</para>
 
         <para>構文ハイライト機能を使うには、
@@ -390,7 +392,8 @@ $ pear install mediawiki/geshi]]></screen>
         </para>
 
         <para>PhD に同梱されている構文強調クラスを使うだけでなく、
-        構文強調クラスを自作することもできます。</para>
+        <link linkend="phd-extension-highlighter">構文強調クラスを自作する</link>
+        こともできます。</para>
       </section>
 
     </section>
@@ -635,6 +638,47 @@ $ pear install mediawiki/geshi]]></screen>
       </section>
     </section>
   </chapter>
+
+
+
+  <chapter xml:id="phd-extension">
+    <title>PhD の拡張</title>
+
+    <para>PhD は PHP で書かれているので、ハックして機能を拡張するのも簡単です。
+    PhD 自体のコードをいじらなくても、コマンドラインのパラメータで自作のコードを使うようにすることもできます。
+    ソースコードの構文強調クラスなどがその例です。</para>
+
+    <section xml:id="phd-extension-highlighter">
+      <title>構文強調クラスの自作</title>
+
+      <para>PhD の構文強調クラスは、ごく普通の PHP クラスです。
+      <literal>factory</literal> および <literal>highlight</literal>
+      のふたつのメソッドを持ちます。</para>
+
+      <para><literal>factory</literal> は static メソッドで、唯一のパラメータとして書式名
+      (<literal>pdf</literal>、<literal>xhtml</literal>、
+      <literal>troff</literal> など) を受け取ります。
+      そして、指定したフォーマットに対応する構文強調クラスのインスタンスを返します。
+      このメソッドは、ドキュメントのレンダリング時に出力フォーマットごとにコールされます。</para>
+
+      <para><literal>highlight</literal> は、三つのパラメータ
+      <literal>text</literal>、<literal>role</literal> および
+      <literal>format</literal> を受け取ります。
+      ソースコードの構文ハイライトが必要となるたびにコールされ、
+      現在の出力フォーマットに対応した色付け済みのソースコードを返します。</para>
+
+      <para>同梱されている
+      <literal>phpdotnet\phd\Highlighter</literal> や
+      <literal>phpdotnet\phd\Highlighter_GeSHi</literal>、そして
+      <literal>phpdotnet\phd\Highlighter_GeSHi11x</literal>
+      を見てみましょう。構文強調クラスを自作するにあたってのよいサンプルとなります。</para>
+
+      <para>自作のクラスができあがったら、ぜひ
+      <link linkend="render-custom-highlighter">試してみましょう</link>。</para>
+    </section>
+  </chapter>
+
+
 
   <appendix xml:id="links">
     <title>リンク集</title>
