@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- EN-Revision: 298506 Maintainer: takagi Status: working -->
+<!-- EN-Revision: 302829 Maintainer: takagi Status: ready -->
 <book version="5.0" xmlns="http://docbook.org/ns/docbook"
       xmlns:xlink="http://www.w3.org/1999/xlink"
       xmlns:xi="http://www.w3.org/2001/XInclude"
@@ -322,7 +322,60 @@ $ phd -f bigxhtml -d phd-guide.xml
 
       <para>これを参考にすれば、みなさんが自分で作った docbook ファイルもレンダリングできるでしょう。</para>
     </section>
+
+    <section xml:id="render-custom">
+      <title>出力結果のカスタマイズ</title>
+
+      <para>PhD にはさまざまなオプションがあります。これらを使えば、
+      生成されるドキュメントファイルをカスタマイズすることができます。
+      次の節では、いくつかのオプションについて説明します。</para>
+
+      <section xml:id="render-custom-highlighter">
+        <title>ソースコードのハイライト</title>
+
+        <para>プログラミング言語に関するドキュメントには、
+        サンプルコードが含まれることがあります。PhD は、
+        さまざまな形式でソースコードに色付けすることができます。</para>
+
+        <para>デフォルトでは PhD は PHP 自体に組み込まれている
+        色付け機能を使います。この機能は PHP のコードにのみ対応したものであり、
+        その他のコードには使えません。</para>
+
+        <para>ドキュメントの中に XML や HTML、Javascript
+        などのその他の言語のソースコードが含まれる場合は、
+        <link xlink:href="http://qbnz.com/highlighter/">GeSHi</link>
+        を使いましょう。GeSHi を使うための仕組みが PhD に同梱されています。</para>
+
+        <orderedlist>
+          <listitem>
+           <para>
+            MediaWiki の PEAR チャンネルから GeSHi をインストールします。
+           </para>
+           <screen><![CDATA[$ pear channel-discover mediawiki.googlecode.com/svn
+$ pear install mediawiki/geshi]]></screen>
+          </listitem>
+
+          <listitem>
+           <para>
+            ドキュメントをレンダリングするときに、GeSHi 用の構文強調クラスを指定します。
+           <screen><![CDATA[$ phd -g 'phpdotnet\phd\Highlighter_GeSHi' -d phd-guide.xml]]></screen>
+           </para>
+          </listitem>
+        </orderedlist>
+
+        <para>GeSHi バージョン 1.1.x をインストールしている場合は
+        <literal>phpdotnet\phd\Highlighter_GeSHi11x</literal> を使わなければなりません。
+        これは GeSHi の新しい API に対応したクラスです。
+        </para>
+
+        <para>PhD に同梱されている構文強調クラスを使うだけでなく、
+        構文強調クラスを自作することもできます。</para>
+      </section>
+
+    </section>
+
   </chapter>
+
 
   <chapter xml:id="docbook-extensions">
     <title>DocBook の拡張</title>
